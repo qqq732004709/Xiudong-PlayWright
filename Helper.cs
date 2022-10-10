@@ -29,7 +29,7 @@ public class Helper
 
     public async Task LoadTicketPage(IPage page)
     {
-        var confirmUrl = $@"https://wap.showstart.com/pages/order/activity/confirm/confirm?sequence="+
+        var confirmUrl = $@"https://wap.showstart.com/pages/order/activity/confirm/confirm?sequence=" +
             $@"{_event}&ticketId={_ticketId}&ticketNum={_ticketNum}&ioswx=1&terminal=app&from=singlemessage&isappinstalled=0";
 
         for (int i = 0; i < 3; i++)
@@ -48,8 +48,45 @@ public class Helper
             return;
         }
 
-        await page.GotoAsync(confirmUrl);
+        IElementHandle? payBtn;
+        while (true)
+        {
+            await page.GotoAsync(confirmUrl, new() { WaitUntil = WaitUntilState.NetworkIdle });
+            payBtn = await page.QuerySelectorAsync("body > uni-app > uni-page > uni-page-wrapper > uni-page-body > uni-view > uni-view.footer-bar > uni-view.payBtn");
+            var text = payBtn == null ? "" : await payBtn.TextContentAsync();
+            if (text != null && text.Contains("立即支付"))
+            {
+                break;
+            }
+            Thread.Sleep(10);
+        }
 
-        await page.WaitForTimeoutAsync(1000 * 100);
+        Console.WriteLine($"是否需要选择观演人: {_needSelect}, 如果需要, 选择数量: {_selectNum}");
+        if (_needSelect)
+        {
+            //选择观演人
+        }
+
+        if (_startTime == null)
+        {
+            Console.WriteLine("开始抢票");
+
+            while (true)
+            {
+                try
+                {
+                    await payBtn.ClickAsync(new() { ClickCount = 100, });
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("点击支付按钮发生异常，可能是已经抢票成功, 请查看手机 但是先不要退出");
+                    continue;
+                }
+            }
+        }
+        else
+        {
+
+        }
     }
 }
