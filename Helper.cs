@@ -11,14 +11,17 @@ public class Helper
     private DateTime? _startTime;
     private bool _needSelect;
     private int _selectNum;
+    public IPage page;
 
-    public Helper(string ticketId,
+    public Helper(IPage page,
+                  string ticketId,
                   string ticketEvent,
                   bool needSelect,
                   DateTime? startTime,
                   string ticketNum = "1",
                   int selectNum = 1)
     {
+        this.page = page;
         _event = ticketEvent;
         _ticketId = ticketId;
         _ticketNum = ticketNum;
@@ -27,11 +30,8 @@ public class Helper
         _needSelect = needSelect;
     }
 
-    public async Task LoadTicketPage(IPage page)
+    public async Task<IElementHandle?> LoadTicketPage()
     {
-        var confirmUrl = $@"https://wap.showstart.com/pages/order/activity/confirm/confirm?sequence=" +
-            $@"{_event}&ticketId={_ticketId}&ticketNum={_ticketNum}&ioswx=1&terminal=app&from=singlemessage&isappinstalled=0";
-
         for (int i = 0; i < 3; i++)
         {
             await page.WaitForTimeoutAsync(1000 * 10);
@@ -45,22 +45,29 @@ public class Helper
         if (await page.TitleAsync() != "我的")
         {
             Console.WriteLine("未登录");
-            return;
+            return null;
         }
+
+        var confirmUrl = $@"https://wap.showstart.com/pages/order/activity/confirm/confirm?sequence=" +
+   $@"{_event}&ticketId={_ticketId}&ticketNum={_ticketNum}&ioswx=1&terminal=app&from=singlemessage&isappinstalled=0";
 
         IElementHandle? payBtn;
         while (true)
         {
             await page.GotoAsync(confirmUrl, new() { WaitUntil = WaitUntilState.NetworkIdle });
-            payBtn = await page.QuerySelectorAsync("body > uni-app > uni-page > uni-page-wrapper > uni-page-body > uni-view > uni-view.footer-bar > uni-view.payBtn");
+            payBtn = await page.WaitForSelectorAsync(".payBtn", new PageWaitForSelectorOptions() { State = WaitForSelectorState.Attached, Strict = true, Timeout = 1000 * 10 });
             var text = payBtn == null ? "" : await payBtn.TextContentAsync();
             if (text != null && text.Contains("立即支付"))
             {
                 break;
             }
-            Thread.Sleep(10);
         }
 
+        return payBtn;
+    }
+
+    public async Task BuyTicket(IElementHandle payBtn)
+    {
         Console.WriteLine($"是否需要选择观演人: {_needSelect}, 如果需要, 选择数量: {_selectNum}");
         if (_needSelect)
         {
@@ -75,7 +82,7 @@ public class Helper
             {
                 try
                 {
-                    await payBtn.ClickAsync(new() { ClickCount = 100, });
+                    await payBtn.ClickAsync(new() { ClickCount = 10, });
                 }
                 catch (Exception e)
                 {
