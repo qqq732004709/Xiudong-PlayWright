@@ -8,11 +8,22 @@ var context = await browser.NewContextAsync(new BrowserNewContextOptions() { Sto
 
 var page = await context.NewPageAsync();
 await page.AddInitScriptAsync(scriptPath: @"N:\.NET CORE\PlaywrightDemo\stealth.min.js");
-await page.GotoAsync("https://wap.showstart.com/pages/passport/login/login?redirect=%2Fpages%2FmyHome%2FmyHome");
-
 var helper = new Helper(page, "0fc7521c6836ac036a39b1dabace907e", "182990", false, null, "1", 1);
 
-var payBtn = await helper.LoadTicketPage();
+var isLogin = await helper.Login();
+
+if (!isLogin)
+{
+    return;
+}
+
+var payBtn = await helper.GetPayBtn();
+
+if (payBtn == null)
+{
+    Console.WriteLine("未获取到支付按钮");
+    return;
+}
 
 await helper.BuyTicket(payBtn);
 

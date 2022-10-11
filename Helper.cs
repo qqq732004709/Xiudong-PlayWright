@@ -30,37 +30,50 @@ public class Helper
         _needSelect = needSelect;
     }
 
-    public async Task<IElementHandle?> LoadTicketPage()
+    public async Task<bool> Login()
     {
+        //检查cookie是否过期
+        await page.GotoAsync("https://wap.showstart.com/pages/myHome/myHome");
+
         for (int i = 0; i < 3; i++)
         {
             await page.WaitForTimeoutAsync(1000 * 10);
             if (await page.TitleAsync() == "我的")
             {
                 Console.WriteLine("登陆成功");
-                break;
+                return true;
             }
         }
 
-        if (await page.TitleAsync() != "我的")
-        {
-            Console.WriteLine("未登录");
-            return null;
-        }
+        Console.WriteLine("未登录");
+        return false;
+    }
 
+    public async Task<IElementHandle?> GetPayBtn()
+    {
         var confirmUrl = $@"https://wap.showstart.com/pages/order/activity/confirm/confirm?sequence=" +
    $@"{_event}&ticketId={_ticketId}&ticketNum={_ticketNum}&ioswx=1&terminal=app&from=singlemessage&isappinstalled=0";
 
         IElementHandle? payBtn;
+        var flashCount = 0; // 刷新次数
         while (true)
         {
+            //超过20次循环未获取按钮返回
+            if (flashCount >= 20)
+            {
+                return null;
+            }
+
             await page.GotoAsync(confirmUrl, new() { WaitUntil = WaitUntilState.NetworkIdle });
-            payBtn = await page.WaitForSelectorAsync(".payBtn", new PageWaitForSelectorOptions() { State = WaitForSelectorState.Attached, Strict = true, Timeout = 1000 * 10 });
+            payBtn = await page.WaitForSelectorAsync(".payBtn", new() { State = WaitForSelectorState.Visible, Strict = true, Timeout = 1000 * 5 });
             var text = payBtn == null ? "" : await payBtn.TextContentAsync();
             if (text != null && text.Contains("立即支付"))
             {
+                Console.WriteLine("获取支付按钮成功！");
                 break;
             }
+
+            flashCount++;
         }
 
         return payBtn;
