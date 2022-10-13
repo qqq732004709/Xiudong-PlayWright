@@ -13,24 +13,15 @@ var context = await browser.NewContextAsync(new BrowserNewContextOptions() { Sto
 
 var page = await context.NewPageAsync();
 await page.AddInitScriptAsync(scriptPath: @"stealth.min.js");
+
 var helper = new Helper(page, config);
-
 var isLogin = await helper.CheckLogin();
-
 if (!isLogin)
 {
     return;
 }
 
-var payBtn = await helper.GetPayBtn();
-
-if (payBtn == null)
-{
-    Console.WriteLine("未获取到支付按钮");
-    return;
-}
-
-await helper.BuyTicket(payBtn);
+await helper.PurchaseLoop();
 
 await context.StorageStateAsync(new BrowserContextStorageStateOptions() { Path = authPath });
 await context.CloseAsync();

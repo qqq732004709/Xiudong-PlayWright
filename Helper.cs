@@ -76,7 +76,7 @@ public class Helper
         while (true)
         {
             //超过20次循环未获取按钮返回
-            if (flashCount >= 20)
+            if (flashCount >= 10)
             {
                 return null;
             }
@@ -112,28 +112,39 @@ public class Helper
             //选择观演人
         }
 
-        if (_startTime == null)
+        Console.WriteLine("开始抢票");
+        while (true)
         {
-            Console.WriteLine("开始抢票");
-
-            while (true)
+            try
             {
-                try
-                {
-                    await payBtn.ClickAsync(new() { ClickCount = 3 });
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("点击支付按钮发生异常，可能是已经抢票成功, 请查看手机 但是先不要退出");
-                    continue;
-                }
-
-                Thread.Sleep(50);
+                await payBtn.ClickAsync(new() { ClickCount = 10 });
             }
-        }
-        else
-        {
+            catch (Exception e)
+            {
+                Console.WriteLine("点击支付按钮发生异常，可能是已经抢票成功, 请查看手机 但是先不要退出");
+                break;
+            }
 
+            await page.WaitForTimeoutAsync(200);
         }
+
+    }
+
+    public async Task PurchaseLoop(int loopCount = 10)
+    {
+        for (int i = 0; i < loopCount; i++)
+        {
+            var payBtn = await GetPayBtn();
+
+            if (payBtn == null)
+            {
+                Console.WriteLine("未获取到支付按钮");
+                continue;
+            }
+
+            await BuyTicket(payBtn);
+            await page.WaitForTimeoutAsync(100);
+        }
+
     }
 }
