@@ -19,29 +19,43 @@ public class Helper
         this.page = page;
         _activityId = appConfig.ActivityId;
         _ticketId = appConfig.TicketId;
-        _ticketNum =appConfig.TicketNum;
-        _selectNum =appConfig.SelectNum;
+        _ticketNum = appConfig.TicketNum;
+        _selectNum = appConfig.SelectNum;
         _startTime = appConfig.StartTime;
         _needSelect = appConfig.NeedSelect;
     }
 
-    public async Task<bool> Login()
+    public async Task<bool> CheckLogin()
     {
         //检查cookie是否过期
-        await page.GotoAsync("https://wap.showstart.com/pages/myHome/myHome");
+        await page.GotoAsync("https://wap.showstart.com/pages/myHome/myHome",
+            new() { WaitUntil = WaitUntilState.NetworkIdle });
 
-        for (int i = 0; i < 3; i++)
+        try
         {
-            await page.WaitForTimeoutAsync(1000 * 10);
-            if (await page.TitleAsync() == "我的")
+            //是否有登录按钮
+            var loginBtn = await page.WaitForSelectorAsync(".login-btn", new() { State = WaitForSelectorState.Visible, Timeout = 5000 });
+            //未登录 跳转登录页面
+            if (loginBtn != null)
             {
-                Console.WriteLine("登陆成功");
-                return true;
+                //滑块验证码登录
+                return await Login();
             }
         }
+        catch (Exception)
+        {
+            Console.WriteLine("登录成功");
+            return true;
+        }
 
-        Console.WriteLine("未登录");
-        return false;
+        return true;
+    }
+
+    public async Task<bool> Login()
+    {
+        await page.GotoAsync("https://wap.showstart.com/pages/passport/login/login?redirect=%252Fpages%252FmyHome%252FmyHome",
+    new() { WaitUntil = WaitUntilState.NetworkIdle });
+        return true;
     }
 
     public async Task<IElementHandle?> GetPayBtn()
@@ -60,7 +74,15 @@ public class Helper
             }
 
             await page.GotoAsync(confirmUrl, new() { WaitUntil = WaitUntilState.NetworkIdle });
-            payBtn = await page.WaitForSelectorAsync(".payBtn", new() { State = WaitForSelectorState.Visible, Strict = true, Timeout = 1000 * 5 });
+            try
+            {
+                payBtn = await page.WaitForSelectorAsync(".payBtn", new() { State = WaitForSelectorState.Visible, Strict = true, Timeout = 5000 });
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("获取支付按钮超时");
+                continue;
+            }
             var text = payBtn == null ? "" : await payBtn.TextContentAsync();
             if (text != null && text.Contains("立即支付"))
             {
@@ -90,7 +112,7 @@ public class Helper
             {
                 try
                 {
-                    await payBtn.ClickAsync(new() { ClickCount = 3});
+                    await payBtn.ClickAsync(new() { ClickCount = 3 });
                 }
                 catch (Exception e)
                 {

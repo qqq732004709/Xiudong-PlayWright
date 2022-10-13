@@ -15,7 +15,7 @@ var page = await context.NewPageAsync();
 await page.AddInitScriptAsync(scriptPath: @"stealth.min.js");
 var helper = new Helper(page, config);
 
-var isLogin = await helper.Login();
+var isLogin = await helper.CheckLogin();
 
 if (!isLogin)
 {
