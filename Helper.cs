@@ -55,7 +55,15 @@ public class Helper
     {
         await page.GotoAsync("https://wap.showstart.com/pages/passport/login/login?redirect=%252Fpages%252FmyHome%252FmyHome",
     new() { WaitUntil = WaitUntilState.NetworkIdle });
-        return true;
+
+        await page.WaitForTimeoutAsync(1000 * 50);
+
+        if (await page.TitleAsync() == "我的")
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public async Task<IElementHandle?> GetPayBtn()
