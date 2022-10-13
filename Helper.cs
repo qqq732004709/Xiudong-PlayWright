@@ -14,20 +14,15 @@ public class Helper
     public IPage page;
 
     public Helper(IPage page,
-                  string ticketId,
-                  string activityId,
-                  bool needSelect,
-                  DateTime? startTime,
-                  string ticketNum = "1",
-                  int selectNum = 1)
+                 AppConfig appConfig)
     {
         this.page = page;
-        _activityId = activityId;
-        _ticketId = ticketId;
-        _ticketNum = ticketNum;
-        _selectNum = selectNum;
-        _startTime = startTime;
-        _needSelect = needSelect;
+        _activityId = appConfig.ActivityId;
+        _ticketId = appConfig.TicketId;
+        _ticketNum =appConfig.TicketNum;
+        _selectNum =appConfig.SelectNum;
+        _startTime = appConfig.StartTime;
+        _needSelect = appConfig.NeedSelect;
     }
 
     public async Task<bool> Login()

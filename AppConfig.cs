@@ -50,7 +50,7 @@ public class AppConfig
         {
             config = GetDefaultConfig();
             Save(config);
-            Logging.Info("Init AppConfig.");
+            Console.WriteLine("初始化配置成功");
         }
 
         return config;
