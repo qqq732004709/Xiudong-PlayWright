@@ -5,11 +5,7 @@ using PlaywrightDemo;
 var config = AppConfig.Load();
 
 var authPath = "auth.json";
-bool ifExistsAuth = File.Exists(authPath);
-if (!ifExistsAuth)
-{
-    File.Create(authPath);
-}
+AppConfig.CheckAuthFile(authPath);
 
 using var playwright = await Playwright.CreateAsync();
 await using var browser = await playwright.Chromium.LaunchAsync(new() { Channel = "msedge", Headless = false });

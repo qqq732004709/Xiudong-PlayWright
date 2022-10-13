@@ -55,6 +55,7 @@ public class AppConfig
 
         return config;
     }
+  
 
     /// <summary>
     /// 保存配置到本地
@@ -80,5 +81,14 @@ public class AppConfig
             ActivityId = "0fc7521c6836ac036a39b1dabace907e",
             TicketId= "182990"
         };
+    }
+
+    public static void CheckAuthFile(string authPath)
+    {
+        bool ifExistsAuth = File.Exists(authPath);
+        if (!ifExistsAuth)
+        {
+            using var file = File.Create(authPath);
+        }
     }
 }
