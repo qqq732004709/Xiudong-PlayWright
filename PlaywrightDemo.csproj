@@ -17,4 +17,10 @@
     <PackageReference Include="Microsoft.Playwright" Version="1.26.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="stealth.min.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

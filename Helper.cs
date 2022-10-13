@@ -5,24 +5,24 @@ namespace PlaywrightDemo;
 
 public class Helper
 {
-    private string _event;
-    private string _ticketId;
-    private string _ticketNum;
-    private DateTime? _startTime;
-    private bool _needSelect;
-    private int _selectNum;
+    public string _activityId;
+    public string _ticketId;
+    public string _ticketNum;
+    public DateTime? _startTime;
+    public bool _needSelect;
+    public int _selectNum;
     public IPage page;
 
     public Helper(IPage page,
                   string ticketId,
-                  string ticketEvent,
+                  string activityId,
                   bool needSelect,
                   DateTime? startTime,
                   string ticketNum = "1",
                   int selectNum = 1)
     {
         this.page = page;
-        _event = ticketEvent;
+        _activityId = activityId;
         _ticketId = ticketId;
         _ticketNum = ticketNum;
         _selectNum = selectNum;
@@ -52,7 +52,7 @@ public class Helper
     public async Task<IElementHandle?> GetPayBtn()
     {
         var confirmUrl = $@"https://wap.showstart.com/pages/order/activity/confirm/confirm?sequence=" +
-   $@"{_event}&ticketId={_ticketId}&ticketNum={_ticketNum}&ioswx=1&terminal=app&from=singlemessage&isappinstalled=0";
+   $@"{_activityId}&ticketId={_ticketId}&ticketNum={_ticketNum}&ioswx=1&terminal=app&from=singlemessage&isappinstalled=0";
 
         IElementHandle? payBtn;
         var flashCount = 0; // 刷新次数
@@ -95,13 +95,15 @@ public class Helper
             {
                 try
                 {
-                    await payBtn.ClickAsync(new() { ClickCount = 10, });
+                    await payBtn.ClickAsync(new() { ClickCount = 3});
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("点击支付按钮发生异常，可能是已经抢票成功, 请查看手机 但是先不要退出");
                     continue;
                 }
+
+                Thread.Sleep(50);
             }
         }
         else

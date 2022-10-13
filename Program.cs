@@ -1,13 +1,29 @@
 ﻿using Microsoft.Playwright;
 using PlaywrightDemo;
 
+//创建配置文件
+var cofigPath = "ticketconfig.json";
+var authPath = "auth.json";
+bool ifExistsConfig = File.Exists(cofigPath);
+bool ifExistsAuth = File.Exists(authPath);
+if (!ifExistsConfig)
+{
+   using var config =  File.Create(cofigPath);
+}
+
+if (!ifExistsAuth)
+{
+     File.Create(authPath);
+}
+
+
+
 using var playwright = await Playwright.CreateAsync();
 await using var browser = await playwright.Chromium.LaunchAsync(new() { Channel = "msedge", Headless = false });
-
-var context = await browser.NewContextAsync(new BrowserNewContextOptions() { StorageStatePath = @"N:\.NET CORE\PlaywrightDemo\auth.json" });
+var context = await browser.NewContextAsync(new BrowserNewContextOptions() { StorageStatePath = @"auth.json" });
 
 var page = await context.NewPageAsync();
-await page.AddInitScriptAsync(scriptPath: @"N:\.NET CORE\PlaywrightDemo\stealth.min.js");
+await page.AddInitScriptAsync(scriptPath: @"stealth.min.js");
 var helper = new Helper(page, "0fc7521c6836ac036a39b1dabace907e", "182990", false, null, "1", 1);
 
 var isLogin = await helper.Login();
@@ -27,6 +43,6 @@ if (payBtn == null)
 
 await helper.BuyTicket(payBtn);
 
-await context.StorageStateAsync(new BrowserContextStorageStateOptions() { Path= @"N:\.NET CORE\PlaywrightDemo\auth.json" });
+await context.StorageStateAsync(new BrowserContextStorageStateOptions() { Path= @"auth.json" });
 await context.CloseAsync();
 await browser.CloseAsync();
