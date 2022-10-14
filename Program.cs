@@ -4,6 +4,29 @@ using PlaywrightDemo;
 //加载配置
 var config = AppConfig.Load();
 
+//定时运行
+if (config.StartTime.HasValue && config.StartTime > DateTime.Now)
+{
+    var timeSpan = config.StartTime - DateTime.Now;
+    //只允许定时十分钟内的任务
+    if (timeSpan.Value.TotalMinutes > 10)
+    {
+        Console.WriteLine("只允许定时十分钟内的任务");
+        return;
+    }
+
+    using var timer = new PeriodicTimer(TimeSpan.FromSeconds(3));
+    while (await timer.WaitForNextTickAsync())
+    {
+        if (DateTime.Now.AddSeconds(-10) >= config.StartTime.Value)
+        {
+            Console.WriteLine($"当前时间：{DateTime.Now} 开始执行任务");
+            timer.Dispose();
+        }
+        Console.WriteLine($"当前时间：{DateTime.Now} 未到预约开始时间");
+    }
+}
+
 var authPath = "auth.json";
 AppConfig.CheckAuthFile(authPath);
 

@@ -78,8 +78,9 @@ public class AppConfig
     {
         return new AppConfig()
         {
-            ActivityId = "0fc7521c6836ac036a39b1dabace907e",
-            TicketId= "182990"
+            ActivityId = "182990",
+            TicketId = "0fc7521c6836ac036a39b1dabace907e",
+            StartTime = DateTime.Now.AddMinutes(1)
         };
     }
 
