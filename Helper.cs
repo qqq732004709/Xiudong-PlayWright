@@ -130,6 +130,29 @@ public class Helper
 
     }
 
+    public async Task SelectPerson()
+    {
+        try
+        {
+            var selectBtn = await page.WaitForSelectorAsync(".link-item>.rr>.tips", new() { State = WaitForSelectorState.Visible, Timeout = 200 });
+            await selectBtn.ClickAsync();
+
+            for (int i = 0; i < _selectNum; i++)
+            {
+                var checkbox = await page.WaitForSelectorAsync($".uni-scroll-view-content > uni-checkbox-group > uni-label:nth-child({i + 1})", new() { Timeout = 200 });
+                await checkbox.ClickAsync();
+            }
+
+            var confirmBtn = await page.WaitForSelectorAsync(".pop-box>.pop-head>uni-view:nth-child(2)", new() { State = WaitForSelectorState.Visible, Timeout = 200 });
+            confirmBtn?.ClickAsync();
+        }
+        catch (Exception)
+        {
+            Console.WriteLine("未获取到选择观演人按钮");
+            await page.ReloadAsync();
+        }
+    }
+
     public async Task PurchaseLoop(int loopCount = 10)
     {
         for (int i = 0; i < loopCount; i++)
