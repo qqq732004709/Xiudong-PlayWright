@@ -157,6 +157,11 @@ public class Helper
     {
         for (int i = 0; i < loopCount; i++)
         {
+            if (_needSelect)
+            {
+                await SelectPerson();
+            }
+
             var payBtn = await GetPayBtn();
 
             if (payBtn == null)
