@@ -25,7 +25,7 @@
   "ActivityId": "182990",  --场次id
   "TicketId": "0fc7521c6836ac036a39b1dabace907e", --票种类id
   "TicketNum": "1", --购买张数
-  "StartTime": null, --预定抢购时间
+  "StartTime": "yyyy-MM-dd HH:mm:ss", --预定抢购时间
   "NeedSelect": false, --是否自动选择购票人
   "SelectNum": 1  --购票人数
 }
