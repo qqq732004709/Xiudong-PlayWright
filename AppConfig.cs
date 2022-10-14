@@ -8,6 +8,7 @@ public class AppConfig
     /// 配置文件名（必须跟程序同目录）
     /// </summary>
     public const string CONFIG_FILE_NAME = "ticketconfig.json";
+    private static Newtonsoft.Json.Converters.IsoDateTimeConverter timeFormat = new() { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" };
 
     public string ActivityId; //live场次id
     public string TicketId;  //购票分类id
@@ -39,7 +40,7 @@ public class AppConfig
         {
             //从文件中读取
             string configContent = File.ReadAllText(CONFIG_FILE_NAME);
-            config = JsonConvert.DeserializeObject<AppConfig>(configContent);
+            config = JsonConvert.DeserializeObject<AppConfig>(configContent, timeFormat);
         }
         catch (FileNotFoundException)
         {
@@ -64,7 +65,7 @@ public class AppConfig
     public static void Save(AppConfig config)
     {
         string configContent = config == null ? string.Empty
-            : JsonConvert.SerializeObject(config);
+            : JsonConvert.SerializeObject(config, timeFormat);
         //保存到文件中
         File.WriteAllText(CONFIG_FILE_NAME, configContent);
     }

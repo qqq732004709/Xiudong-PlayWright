@@ -22,6 +22,7 @@ if (config.StartTime.HasValue && config.StartTime > DateTime.Now)
         {
             Console.WriteLine($"当前时间：{DateTime.Now} 开始执行任务");
             timer.Dispose();
+            break;
         }
         Console.WriteLine($"当前时间：{DateTime.Now} 未到预约开始时间");
     }
