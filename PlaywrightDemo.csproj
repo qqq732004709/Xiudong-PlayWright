@@ -16,6 +16,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Playwright" Version="1.26.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="OpenCvSharp4" Version="4.6.0.20220608" />
   </ItemGroup>
 
   <ItemGroup>

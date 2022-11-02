@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Playwright;
+using OpenCvSharp;
 
 namespace PlaywrightDemo;
 
@@ -174,5 +175,30 @@ public class Helper
             await page.WaitForTimeoutAsync(100);
         }
 
+    }
+
+    public int GetDistance(string sliderPath, string backgroudPath)
+    {
+        using var slider = Cv2.ImRead(sliderPath, ImreadModes.Grayscale);
+        using var backgroudImg = Cv2.ImRead(backgroudPath, ImreadModes.Grayscale);
+
+        var img1 = TranCanny(slider);
+        var img2 = TranCanny(backgroudImg);
+        var res = new Mat();
+        Cv2.MatchTemplate(img1, img2, res, TemplateMatchModes.CCoeffNormed);
+
+        double minVal,maxVal;
+        Point minLoc, maxLoc;
+        Cv2.MinMaxLoc(res, out minVal, out maxVal, out minLoc, out maxLoc);
+        var topLeft = maxLoc.X;
+
+        return topLeft * 278 / 360; 
+    }
+
+    public Mat TranCanny(Mat img)
+    {
+        Cv2.GaussianBlur(img, img, ksize: new Size(3, 3), sigmaX: 0);
+        Cv2.Canny(img, img, 50, 150);
+        return img;
     }
 }
