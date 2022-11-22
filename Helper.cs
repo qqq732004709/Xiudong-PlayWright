@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Playwright;
 using OpenCvSharp;
 
@@ -6,36 +5,36 @@ namespace PlaywrightDemo;
 
 public class Helper
 {
-    public string _activityId;
-    public string _ticketId;
-    public string _ticketNum;
-    public DateTime? _startTime;
-    public bool _needSelect;
-    public int _selectNum;
-    public IPage page;
+    public string ActivityId;
+    public string TicketId;
+    public string TicketNum;
+    public DateTime? StartTime;
+    public bool NeedSelect;
+    public int SelectNum;
+    public IPage Page;
 
     public Helper(IPage page,
                  AppConfig appConfig)
     {
-        this.page = page;
-        _activityId = appConfig.ActivityId;
-        _ticketId = appConfig.TicketId;
-        _ticketNum = appConfig.TicketNum;
-        _selectNum = appConfig.SelectNum;
-        _startTime = appConfig.StartTime;
-        _needSelect = appConfig.NeedSelect;
+        this.Page = page;
+        ActivityId = appConfig.ActivityId;
+        TicketId = appConfig.TicketId;
+        TicketNum = appConfig.TicketNum;
+        SelectNum = appConfig.SelectNum;
+        StartTime = appConfig.StartTime;
+        NeedSelect = appConfig.NeedSelect;
     }
 
     public async Task<bool> CheckLogin()
     {
         //检查cookie是否过期
-        await page.GotoAsync("https://wap.showstart.com/pages/myHome/myHome",
+        await Page.GotoAsync("https://wap.showstart.com/pages/myHome/myHome",
             new() { WaitUntil = WaitUntilState.NetworkIdle });
 
         try
         {
             //是否有登录按钮
-            var loginBtn = await page.WaitForSelectorAsync(".login-btn", new() { State = WaitForSelectorState.Visible, Timeout = 5000 });
+            var loginBtn = await Page.WaitForSelectorAsync(".login-btn", new() { State = WaitForSelectorState.Visible, Timeout = 5000 });
             //未登录 跳转登录页面
             if (loginBtn != null)
             {
@@ -54,12 +53,12 @@ public class Helper
 
     public async Task<bool> Login()
     {
-        await page.GotoAsync("https://wap.showstart.com/pages/passport/login/login?redirect=%252Fpages%252FmyHome%252FmyHome",
+        await Page.GotoAsync("https://wap.showstart.com/pages/passport/login/login?redirect=%252Fpages%252FmyHome%252FmyHome",
     new() { WaitUntil = WaitUntilState.NetworkIdle });
 
-        await page.WaitForTimeoutAsync(1000 * 50);
+        await Page.WaitForTimeoutAsync(1000 * 50);
 
-        if (await page.TitleAsync() == "我的")
+        if (await Page.TitleAsync() == "我的")
         {
             return true;
         }
@@ -70,7 +69,7 @@ public class Helper
     public async Task<IElementHandle?> GetPayBtn()
     {
         var confirmUrl = $@"https://wap.showstart.com/pages/order/activity/confirm/confirm?sequence=" +
-   $@"{_activityId}&ticketId={_ticketId}&ticketNum={_ticketNum}&ioswx=1&terminal=app&from=singlemessage&isappinstalled=0";
+   $@"{ActivityId}&ticketId={TicketId}&ticketNum={TicketNum}&ioswx=1&terminal=app&from=singlemessage&isappinstalled=0";
 
         IElementHandle? payBtn;
         var flashCount = 0; // 刷新次数
@@ -82,10 +81,10 @@ public class Helper
                 return null;
             }
 
-            await page.GotoAsync(confirmUrl, new() { WaitUntil = WaitUntilState.NetworkIdle });
+            await Page.GotoAsync(confirmUrl, new() { WaitUntil = WaitUntilState.NetworkIdle });
             try
             {
-                payBtn = await page.WaitForSelectorAsync(".payBtn", new() { State = WaitForSelectorState.Visible, Strict = true, Timeout = 5000 });
+                payBtn = await Page.WaitForSelectorAsync(".payBtn", new() { State = WaitForSelectorState.Visible, Strict = true, Timeout = 5000 });
             }
             catch (Exception)
             {
@@ -107,8 +106,8 @@ public class Helper
 
     public async Task BuyTicket(IElementHandle payBtn)
     {
-        Console.WriteLine($"是否需要选择观演人: {_needSelect}, 如果需要, 选择数量: {_selectNum}");
-        if (_needSelect)
+        Console.WriteLine($"是否需要选择观演人: {NeedSelect}, 如果需要, 选择数量: {SelectNum}");
+        if (NeedSelect)
         {
             //选择观演人
         }
@@ -126,7 +125,7 @@ public class Helper
                 break;
             }
 
-            await page.WaitForTimeoutAsync(200);
+            await Page.WaitForTimeoutAsync(200);
         }
 
     }
@@ -135,22 +134,22 @@ public class Helper
     {
         try
         {
-            var selectBtn = await page.WaitForSelectorAsync(".link-item>.rr>.tips", new() { State = WaitForSelectorState.Visible, Timeout = 200 });
+            var selectBtn = await Page.WaitForSelectorAsync(".link-item>.rr>.tips", new() { State = WaitForSelectorState.Visible, Timeout = 200 });
             await selectBtn.ClickAsync();
 
-            for (int i = 0; i < _selectNum; i++)
+            for (int i = 0; i < SelectNum; i++)
             {
-                var checkbox = await page.WaitForSelectorAsync($".uni-scroll-view-content > uni-checkbox-group > uni-label:nth-child({i + 1})", new() { Timeout = 200 });
+                var checkbox = await Page.WaitForSelectorAsync($".uni-scroll-view-content > uni-checkbox-group > uni-label:nth-child({i + 1})", new() { Timeout = 200 });
                 await checkbox.ClickAsync();
             }
 
-            var confirmBtn = await page.WaitForSelectorAsync(".pop-box>.pop-head>uni-view:nth-child(2)", new() { State = WaitForSelectorState.Visible, Timeout = 200 });
+            var confirmBtn = await Page.WaitForSelectorAsync(".pop-box>.pop-head>uni-view:nth-child(2)", new() { State = WaitForSelectorState.Visible, Timeout = 200 });
             confirmBtn?.ClickAsync();
         }
         catch (Exception)
         {
             Console.WriteLine("未获取到选择观演人按钮");
-            await page.ReloadAsync();
+            await Page.ReloadAsync();
         }
     }
 
@@ -158,7 +157,7 @@ public class Helper
     {
         for (int i = 0; i < loopCount; i++)
         {
-            if (_needSelect)
+            if (NeedSelect)
             {
                 await SelectPerson();
             }
@@ -172,7 +171,7 @@ public class Helper
             }
 
             await BuyTicket(payBtn);
-            await page.WaitForTimeoutAsync(100);
+            Thread.Sleep(300); //休眠300毫秒避免过快刷新被封禁
         }
 
     }

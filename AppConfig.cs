@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System.Text.Json.Serialization;
 
 namespace PlaywrightDemo;
 public class AppConfig
@@ -7,8 +6,8 @@ public class AppConfig
     /// <summary>
     /// 配置文件名（必须跟程序同目录）
     /// </summary>
-    public const string CONFIG_FILE_NAME = "ticketconfig.json";
-    private static Newtonsoft.Json.Converters.IsoDateTimeConverter timeFormat = new() { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" };
+    public const string ConfigFileName = "ticketconfig.json";
+    private static readonly Newtonsoft.Json.Converters.IsoDateTimeConverter TimeFormat = new() { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" };
 
     public string ActivityId; //live场次id
     public string TicketId;  //购票分类id
@@ -39,8 +38,8 @@ public class AppConfig
         try
         {
             //从文件中读取
-            string configContent = File.ReadAllText(CONFIG_FILE_NAME);
-            config = JsonConvert.DeserializeObject<AppConfig>(configContent, timeFormat);
+            string configContent = File.ReadAllText(ConfigFileName);
+            config = JsonConvert.DeserializeObject<AppConfig>(configContent, TimeFormat);
         }
         catch (FileNotFoundException)
         {
@@ -62,20 +61,19 @@ public class AppConfig
     /// 保存配置到本地
     /// </summary>
     /// <param name="config">要保存的程序配置，传入null等效于清空原文件</param>
-    public static void Save(AppConfig config)
+    public static void Save(AppConfig? config)
     {
-        string configContent = config == null ? string.Empty
-            : JsonConvert.SerializeObject(config, timeFormat);
+        var configContent = config == null ? string.Empty
+            : JsonConvert.SerializeObject(config, TimeFormat);
         //保存到文件中
-        File.WriteAllText(CONFIG_FILE_NAME, configContent);
+        File.WriteAllText(ConfigFileName, configContent);
     }
 
     /// <summary>
     /// 首次获取初始配置时不要直接使用此方法，使用load()方法加载配置！
     /// </summary>
-    /// <param name="loadFailed">表示是否因为加载本地配置失败才调用该方法</param>
     /// <returns>返回默认配置对象</returns>
-    private static AppConfig GetDefaultConfig(bool loadFailed = false)
+    private static AppConfig GetDefaultConfig()
     {
         return new AppConfig()
         {
