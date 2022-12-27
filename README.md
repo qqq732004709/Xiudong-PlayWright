@@ -28,7 +28,7 @@
   "StartTime": "yyyy-MM-dd HH:mm:ss", --预定抢购时间
   "NeedSelect": false, --是否自动选择购票人
   "SelectNum": 1,  --购票人数
-  "InterVal": 200 --刷新间隔时间
+  "InterVal": 200 --刷新间隔时间（毫秒）
 }
 ```
 
