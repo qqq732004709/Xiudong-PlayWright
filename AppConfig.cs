@@ -15,6 +15,7 @@ public class AppConfig
     public DateTime? StartTime; //开始抢购时间
     public bool NeedSelect; //是否选择购票人
     public int SelectNum; //选择数量
+    public int InterVal; // 购买页面刷新间隔时间
 
     public AppConfig()
     {
@@ -24,8 +25,8 @@ public class AppConfig
         TicketNum = "1";
         TicketId = "";
         ActivityId = "";
+        InterVal = 200;
     }
-
 
     /// <summary>
     /// 从本地加载配置
@@ -79,7 +80,8 @@ public class AppConfig
         {
             ActivityId = "182990",
             TicketId = "0fc7521c6836ac036a39b1dabace907e",
-            StartTime = DateTime.Now.AddMinutes(1)
+            StartTime = DateTime.Now.AddMinutes(1),
+            InterVal = 200
         };
     }
 

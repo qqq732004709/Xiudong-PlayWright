@@ -12,6 +12,7 @@ public class Helper
     public bool NeedSelect;
     public int SelectNum;
     public IPage Page;
+    public int Interval;
 
     public Helper(IPage page,
                  AppConfig appConfig)
@@ -113,7 +114,7 @@ public class Helper
         }
 
         Console.WriteLine("开始抢票");
-        while (true)
+        for (int i = 0; i < 10; i++)
         {
             try
             {
@@ -125,7 +126,7 @@ public class Helper
                 break;
             }
 
-            await Page.WaitForTimeoutAsync(300);
+            await Page.WaitForTimeoutAsync(Interval);
         }
 
     }
@@ -153,7 +154,7 @@ public class Helper
         }
     }
 
-    public async Task PurchaseLoop(int loopCount = 10)
+    public async Task PurchaseLoop(int loopCount = 5)
     {
         for (int i = 0; i < loopCount; i++)
         {
@@ -171,9 +172,10 @@ public class Helper
             }
 
             await BuyTicket(payBtn);
-            Thread.Sleep(300); //休眠300毫秒避免过快刷新被封禁
+            Thread.Sleep(Interval); //休眠避免过快刷新被封禁
         }
 
+        Console.WriteLine("购买循环任务结束，请在手机上查看是否购买成功");
     }
 
     public int GetDistance(string sliderPath, string backgroudPath)
