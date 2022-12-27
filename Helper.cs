@@ -117,7 +117,7 @@ public class Helper
         {
             try
             {
-                await payBtn.ClickAsync(new() { ClickCount = 10 });
+                await payBtn.ClickAsync(new() { ClickCount = 3 });
             }
             catch (Exception e)
             {
@@ -125,7 +125,7 @@ public class Helper
                 break;
             }
 
-            await Page.WaitForTimeoutAsync(200);
+            await Page.WaitForTimeoutAsync(300);
         }
 
     }
