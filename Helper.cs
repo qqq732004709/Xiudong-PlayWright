@@ -24,6 +24,7 @@ public class Helper
         SelectNum = appConfig.SelectNum;
         StartTime = appConfig.StartTime;
         NeedSelect = appConfig.NeedSelect;
+        Interval = appConfig.InterVal;
     }
 
     public async Task<bool> CheckLogin()
@@ -76,7 +77,7 @@ public class Helper
         var flashCount = 0; // 刷新次数
         while (true)
         {
-            //超过20次循环未获取按钮返回
+            //超过10次循环未获取按钮返回
             if (flashCount >= 10)
             {
                 return null;
@@ -114,11 +115,11 @@ public class Helper
         }
 
         Console.WriteLine("开始抢票");
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 3; i++)
         {
             try
             {
-                await payBtn.ClickAsync(new() { ClickCount = 3 });
+                await payBtn.ClickAsync(new() { ClickCount = 2 });
             }
             catch (Exception e)
             {

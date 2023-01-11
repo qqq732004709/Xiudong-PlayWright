@@ -27,6 +27,7 @@ if (config.StartTime.HasValue && config.StartTime > DateTime.Now)
         Console.WriteLine($"当前时间：{DateTime.Now} 未到预约开始时间");
     }
 }
+Console.WriteLine($"当前时间：{DateTime.Now} 任务开始");
 
 var authPath = "auth.json";
 AppConfig.CheckAuthFile(authPath);
@@ -44,9 +45,9 @@ if (!isLogin)
 {
     return;
 }
+await context.StorageStateAsync(new BrowserContextStorageStateOptions() { Path = authPath });
 
 await helper.PurchaseLoop();
 
-await context.StorageStateAsync(new BrowserContextStorageStateOptions() { Path = authPath });
 await context.CloseAsync();
 await browser.CloseAsync();
