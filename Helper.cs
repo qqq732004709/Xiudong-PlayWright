@@ -36,7 +36,7 @@ public class Helper
         try
         {
             //是否有登录按钮
-            var loginBtn = await Page.WaitForSelectorAsync(".login-btn", new() { State = WaitForSelectorState.Visible, Timeout = 5000 });
+            var loginBtn = await Page.WaitForSelectorAsync(".login-btn", new() { State = WaitForSelectorState.Visible, Timeout = 1000 * 5 });
             //未登录 跳转登录页面
             if (loginBtn != null)
             {
@@ -58,11 +58,16 @@ public class Helper
         await Page.GotoAsync("https://wap.showstart.com/pages/passport/login/login?redirect=%252Fpages%252FmyHome%252FmyHome",
     new() { WaitUntil = WaitUntilState.NetworkIdle });
 
-        await Page.WaitForTimeoutAsync(1000 * 50);
-
-        if (await Page.TitleAsync() == "我的")
+        var waitTurns = 20;
+        for (int i = 0; i < waitTurns; i++)
         {
-            return true;
+            Console.WriteLine($"等待登录中...{i}/{waitTurns}turns");
+            await Page.WaitForTimeoutAsync(3000);
+            if (await Page.TitleAsync() == "我的")
+            {
+                return true;
+            }
+
         }
 
         return false;
@@ -111,7 +116,7 @@ public class Helper
         Console.WriteLine($"是否需要选择观演人: {NeedSelect}, 如果需要, 选择数量: {SelectNum}");
         if (NeedSelect)
         {
-            //选择观演人
+            await SelectPerson();
         }
 
         Console.WriteLine("开始抢票");
@@ -159,10 +164,7 @@ public class Helper
     {
         for (int i = 0; i < loopCount; i++)
         {
-            if (NeedSelect)
-            {
-                await SelectPerson();
-            }
+            Console.WriteLine($"抢购循环中...{i}/{loopCount}turns");
 
             var payBtn = await GetPayBtn();
 
@@ -189,12 +191,12 @@ public class Helper
         var res = new Mat();
         Cv2.MatchTemplate(img1, img2, res, TemplateMatchModes.CCoeffNormed);
 
-        double minVal,maxVal;
+        double minVal, maxVal;
         Point minLoc, maxLoc;
         Cv2.MinMaxLoc(res, out minVal, out maxVal, out minLoc, out maxLoc);
         var topLeft = maxLoc.X;
 
-        return topLeft * 278 / 360; 
+        return topLeft * 278 / 360;
     }
 
     public Mat TranCanny(Mat img)
