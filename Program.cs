@@ -41,7 +41,6 @@ await page.AddInitScriptAsync(scriptPath: @"stealth.min.js");
 
 var helper = new Helper(page, config);
 var isLogin = await helper.CheckLogin();
-await context.StorageStateAsync(new BrowserContextStorageStateOptions() { Path = authPath });
 
 if (!isLogin)
 {
@@ -49,6 +48,7 @@ if (!isLogin)
     return;
 }
 
+await context.StorageStateAsync(new BrowserContextStorageStateOptions() { Path = authPath });
 await helper.PurchaseLoop();
 
 await context.CloseAsync();
